@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gentrick Services Garage Docs</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top, #0b2f5e 0%, #031427 70%);
+            color: #f3f7ff;
+            z-index: 9999;
+            text-align: center;
+            padding: 20px;
+        }
+        #loading-screen .loader-card {
+            max-width: 420px;
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 24px;
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+            padding: 32px 26px;
+            backdrop-filter: blur(12px);
+        }
+        #loading-screen h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+        #loading-screen p {
+            margin: 14px auto 18px;
+            max-width: 320px;
+            color: #c9d9f4;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .loader-ring {
+            width: 72px;
+            height: 72px;
+            border: 5px solid rgba(255, 255, 255, 0.16);
+            border-top-color: #7da7ff;
+            border-radius: 50%;
+            animation: spinRing 1.2s linear infinite;
+            margin: 0 auto;
+        }
+        .loader-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .loader-dots span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #7da7ff;
+            opacity: 0.65;
+            animation: pulseDot 1s ease-in-out infinite;
+        }
+        .loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes spinRing { to { transform: rotate(360deg); } }
+        @keyframes pulseDot {
+            0%, 100% { opacity: 0.5; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-6px); }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader-card">
+            <h1>GENTRICK SERVICES</h1>
+            <p>Preparing your garage dashboard. Please wait while we load the system offline.</p>
+            <div class="loader-ring"></div>
+            <div class="loader-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <header>
+            <h1>GENTRICK SERVICES</h1>
+            <p class="subtitle">Garage Document Generator for repair orders, invoices, delivery notes, and more.</p>
+            <nav>
+                <button id="nav-dashboard" class="nav-btn active">Dashboard</button>
+                <button id="nav-settings" class="nav-btn">Settings</button>
+            </nav>
+        </header>
+        <div id="dashboard" class="page active">
+            <h2>Choose Garage Document</h2>
+            <div class="cards">
+                <div class="card" data-type="invoice">Invoice</div>
+                <div class="card" data-type="receipt">Receipt</div>
+                <div class="card" data-type="quotation">Quotation</div>
+                <div class="card" data-type="sales-order">Sales Order</div>
+                <div class="card" data-type="delivery-note">Delivery Note</div>
+                <div class="card" data-type="credit-note">Credit Note</div>
+                <div class="card" data-type="debit-note">Debit Note</div>
+            </div>
+        </div>
+        <div id="login-page" class="page">
+            <div class="login-panel">
+                <h2>Welcome Back</h2>
+                <p class="login-subtitle">Sign in to access the Gentrick Services dashboard.</p>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="button" id="login-button" class="login-btn">Login</button>
+                </form>
+            </div>
+        </div>
+        <div id="settings" class="page">
+            <h2>Business Settings</h2>
+            <form id="settings-form">
+                <div class="form-group">
+                    <label for="shop-name">Shop Name:</label>
+                    <input type="text" id="shop-name" value="GENTRICK SERVICES" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="shop-phone">Phone Number:</label>
+                    <input type="tel" id="shop-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="shop-logo">Logo:</label>
+                    <input type="file" id="shop-logo" accept="image/*">
+                </div>
+                <button type="submit">Save Settings</button>
+            </form>
+        </div>
+        <div id="document-form-page" class="page">
+            <h2 id="form-title">Create Document</h2>
+            <form id="document-form">
+                <div class="form-group">
+                    <label for="customer-name">Customer Name:</label>
+                    <input type="text" id="customer-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="customer-phone">Customer Phone:</label>
+                    <input type="tel" id="customer-phone">
+                </div>
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" value="">
+                </div>
+                <div id="payment-method-group" class="form-group hidden">
+                    <label for="payment-method">Payment Method:</label>
+                    <select id="payment-method" class="payment-options">
+                        <option value="Cash">Cash</option>
+                        <option value="Mpesa">Mpesa</option>
+                        <option value="Bank">Bank</option>
+                    </select>
+                </div>
+                <div id="validity-date-group" class="form-group hidden">
+                    <label for="validity-date">Validity Date:</label>
+                    <input type="date" id="validity-date" value="">
+                </div>
+                <div id="status-group" class="form-group hidden">
+                    <label for="status">Order Status:</label>
+                    <select id="status">
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                    </select>
+                </div>
+                <div id="reference-invoice-group" class="form-group hidden">
+                    <label for="reference-invoice">Reference Invoice Number:</label>
+                    <input type="text" id="reference-invoice" placeholder="INV-001">
+                </div>
+                <div id="reason-group" class="form-group hidden">
+                    <label for="reason">Reason for Charge:</label>
+                    <input type="text" id="reason" placeholder="Describe the charge">
+                </div>
+                <div id="amount-group" class="form-group hidden">
+                    <label for="amount">Amount:</label>
+                    <input type="number" id="amount" step="0.01" min="0" placeholder="0.00">
+                </div>
+                <div id="payment-terms-group" class="form-group hidden">
+                    <label for="payment-terms">Payment Terms (optional):</label>
+                    <input type="text" id="payment-terms" placeholder="e.g. Due in 30 days">
+                </div>
+                <div id="signature-group" class="form-group hidden">
+                    <label>Signature:</label>
+                    <div class="signature-line"></div>
+                </div>
+                <div id="items-section" class="items-section">
+                    <h3>Items</h3>
+                    <div id="items-container">
+                        <div class="item-row">
+                            <input type="text" placeholder="Item Name" class="item-name" required>
+                            <input type="text" placeholder="Serial Number (optional)" class="item-serial">
+                            <input type="number" placeholder="Quantity" class="item-qty" min="1" required>
+                            <input type="number" placeholder="Price" class="item-price" step="0.01" min="0" required>
+                            <button type="button" class="remove-item">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-item">Add Item</button>
+                </div>
+                <div class="form-group">
+                    <label for="total">Total:</label>
+                    <input type="text" id="total" readonly>
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="include-tax">
+                    <label for="include-tax">Include 16% Tax</label>
+                </div>
+                <div id="payment-amount-group" class="form-group hidden">
+                    <label for="payment-amount">Payment Amount:</label>
+                    <input type="number" id="payment-amount" step="0.01" min="0" placeholder="0.00">
+                </div>
+                <button type="button" id="generate-preview">Generate Preview</button>
+            </form>
+            <div class="preview-section">
+                <h3>Preview</h3>
+                <div id="document-preview" class="document"></div>
+            </div>
+            <div class="actions">
+                <button id="save-pdf">Save as PDF</button>
+                <button id="print">Print</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingScreen = document.getElementById('loading-screen');
+            setTimeout(function() {
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                }
+                if (window.gotoGentrixLogin) {
+                    window.gotoGentrixLogin();
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
